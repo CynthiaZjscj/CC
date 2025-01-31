@@ -133,11 +133,20 @@
             height = canvas.height = window.innerHeight;
         });
     </script>
-    <h1>欢迎来到主页</h1>
-    <h1>点击屏幕即可燃放烟花</h1>
+    <h3>欢迎来到主页</h3><br>
+    <i>点击Start show及屏幕即可"燃放烟花"</i>
     <ul>
-    <p>访问其他页面：</p>
-        <li><a href="sweet_moments_with_love.html">我们的合影~</a></li>
+    <p>友情链接：</p>
+    .link-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10; /* 让它浮在最上层 */
+}
+    <div class="link-container">
+        <li><a href="sweet_moments_with_love.html">💕 我们的合影~ 💕</a></li>
+    </div>
     </ul>
 </body>
 </html>
