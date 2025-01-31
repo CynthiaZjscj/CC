@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Fireworks for CC</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(145deg, #ffe4e1, #ffccff, #e6e6fa);
+            overflow: hidden;
+            font-family: "Arial", sans-serif;
+            color: #6a0dad;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .controls {
+            z-index: 2;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: #ffccff;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            color: #6a0dad;
+            cursor: pointer;
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            background-color: #ffe4e1;
+        }
+    </style>
+</head>
+<body>
+    <canvas></canvas>
+    <div class="controls">
+        <button id="start">Start Show</button>
+        <button id="stop">Stop Show</button>
+        <button id="clear">Clear Fireworks</button>
+    </div>
+    <script>
+        const canvas = document.querySelector("canvas");
+        const ctx = canvas.getContext("2d");
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        let fireworks = [];
+        let animationFrame;
+
+        class Firework {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = Math.random() * 2 + 1;
+                this.life = 100;
+                this.angle = Math.random() * 2 * Math.PI;
+                this.speed = Math.random() * 3 + 1;
+            }
+
+            update() {
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+                this.radius *= 0.98;
+                this.life--;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        function createFireworks(x, y) {
+            const colors = ["#ff69b4", "#ba55d3", "#ffb6c1", "#dda0dd"];
+            for (let i = 0; i < 50; i++) {
+                fireworks.push(new Firework(x, y, colors[Math.floor(Math.random() * colors.length)]));
+            }
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+            fireworks = fireworks.filter(firework => firework.life > 0);
+            fireworks.forEach(firework => {
+                firework.update();
+                firework.draw();
+            });
+            animationFrame = requestAnimationFrame(render);
+        }
+
+        canvas.addEventListener("click", (e) => {
+            createFireworks(e.clientX, e.clientY);
+        });
+
+        document.getElementById("start").addEventListener("click", () => {
+            if (!animationFrame) render();
+        });
+
+        document.getElementById("stop").addEventListener("click", () => {
+            cancelAnimationFrame(animationFrame);
+            animationFrame = null;
+        });
+
+        document.getElementById("clear").addEventListener("click", () => {
+            fireworks = [];
+            ctx.clearRect(0, 0, width, height);
+        });
+
+        window.addEventListener("resize", () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
