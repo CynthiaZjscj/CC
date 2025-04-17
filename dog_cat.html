@@ -143,12 +143,15 @@
       }, 300);
 
       if (noCount >= 5) {
-        notBtn.style.transition = "all 0.5s ease";
-        notBtn.style.transform = "translateX(120vw)";
-        setTimeout(() => {
-          notBtn.style.display = "none";
-          makePeace();
-        }, 600);
+  // 等待一秒让用户看到最后的求情文案
+  setTimeout(() => {
+    notBtn.style.transition = "all 0.5s ease";
+    notBtn.style.transform = "translateX(100vw)";
+    setTimeout(() => {
+      notBtn.style.display = "none";
+      makePeace();
+    }, 600);
+  }, 1000); // 延迟1000毫秒（1秒）
       }
     }
 
