@@ -1,0 +1,174 @@
+<!DOCTYPE html> 
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>哄老婆的小网页</title>
+  <style>
+    body {
+      background-color: #dceeff;
+      font-family: "Comic Sans MS", "Arial", sans-serif;
+      text-align: center;
+      padding: 30px 10px;
+    }
+
+    #main-img {
+      width: 100%;
+      max-width: 480px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    #title {
+      font-size: 1.4em;
+      font-weight: bold;
+      margin: 10px auto 20px;
+      padding: 0 10px;
+    }
+
+    button {
+      font-size: 1em;
+      padding: 12px 20px;
+      margin: 12px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      max-width: 90vw;
+      word-break: break-word;
+    }
+
+    #ok-btn {
+      background-color: #a4d7f5;
+    }
+
+    #not-btn {
+      background-color: #f5a4a4;
+      position: relative;
+    }
+
+    #emoji-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 999;
+    }
+
+    .emoji {
+      position: absolute;
+      animation: fall 3s linear;
+      font-size: 24px;
+    }
+
+    #final-message {
+      font-size: 1.4em;
+      margin: 20px auto;
+      color: #ff6699;
+      display: none;
+    }
+
+    #replay-btn {
+      display: none;
+      background-color: #ffd966;
+      color: #333;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-100px); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
+      100% { transform: translateX(0); }
+    }
+
+    @media (min-width: 600px) {
+      #title { font-size: 28px; }
+      button { font-size: 20px; }
+      #final-message { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <img id="main-img" src="D:\CC&Z恋爱循环代码\dogandcat\hug.png" alt="狗狗哄猫猫" />
+  <div id="title">乖乖……你还在生气嘛？可以跟老公和好吗？</div>
+  <button id="ok-btn" onclick="makePeace()">和好</button>
+  <button id="not-btn" onclick="noPeace()">不可以</button>
+
+  <div id="final-message">耶～乖乖终于原谅我啦！最喜欢你了～啾咪！💋</div>
+  <button id="replay-btn" onclick="location.reload()">再玩一次</button>
+  <div id="emoji-container"></div>
+
+  <script>
+    let noCount = 0;
+    const notBtn = document.getElementById("not-btn");
+    const messages = [
+      "真的不可以吗？🥺",
+      "人家好伤心呐……",
+      "你就是我的小宝贝呀😖",
+      "抱一个嘛好不好～",
+      "呜呜呜别再拒绝我了😢"
+    ];
+
+    function makePeace() {
+      document.getElementById("main-img").src="D:\CC&Z恋爱循环代码\dogandcat\kiss.png"; // 换成相对路径
+      document.getElementById("title").innerText = "耶～乖乖终于原谅我啦！最喜欢你了～啾咪！💋";
+      document.getElementById("ok-btn").style.display = "none";
+      document.getElementById("not-btn").style.display = "none";
+      document.getElementById("final-message").style.display = "block";
+      startEmojiRain();
+      setTimeout(() => {
+        document.getElementById("replay-btn").style.display = "inline-block";
+      }, 2500);
+    }
+
+    function noPeace() {
+      noCount++;
+      const message = messages[Math.min(noCount - 1, messages.length - 1)];
+      notBtn.innerText = message;
+      notBtn.style.transform = `scale(${1 + noCount * 0.15})`;
+      notBtn.style.animation = "shake 0.3s";
+
+      setTimeout(() => {
+        notBtn.style.animation = "";
+      }, 300);
+
+      if (noCount >= 5) {
+        notBtn.style.transition = "all 0.5s ease";
+        notBtn.style.transform = "translateX(120vw)";
+        setTimeout(() => {
+          notBtn.style.display = "none";
+          makePeace();
+        }, 600);
+      }
+    }
+
+    function startEmojiRain() {
+      const emojis = ["💖", "💋", "🐶", "🐱", "🌸", "😽", "🥺"];
+      const container = document.getElementById("emoji-container");
+
+      for (let i = 0; i < 60; i++) {
+        const emoji = document.createElement("div");
+        emoji.classList.add("emoji");
+        emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+        emoji.style.left = Math.random() * 100 + "vw";
+        emoji.style.animationDuration = 2 + Math.random() * 3 + "s";
+        emoji.style.fontSize = 18 + Math.random() * 30 + "px";
+        container.appendChild(emoji);
+
+        emoji.addEventListener("animationend", () => {
+          emoji.remove();
+        });
+      }
+    }
+  </script>
+</body>
+</html>
