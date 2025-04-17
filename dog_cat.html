@@ -94,7 +94,7 @@
     @media (min-width: 600px) {
       #title { font-size: 28px; }
       button { font-size: 20px; }
-      #final-message { font-size: 22px; }
+      #final-message { font-size: 15px; }
     }
   </style>
 </head>
@@ -121,6 +121,7 @@
 
     function makePeace() {
       document.getElementById("main-img").src="https://pub-585f3f0f8f3d45d1a6273d054813ef11.r2.dev/DAC/kiss.png"; 
+      document.getElementById("title").innerText = "亲亲~💋💋";
       document.getElementById("ok-btn").style.display = "none";
       document.getElementById("not-btn").style.display = "none";
       document.getElementById("final-message").style.display = "block";
