@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>我们的甜蜜网页</title>
+  <style>
+    /* 全局 & 布局 */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      display: flex;
+      height: 100vh;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background: #fff0f6;
+    }
+    /* 侧边拉栏 */
+    .sidebar {
+      width: 160px;
+      background: #ffe0f0;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+      padding-top: 20px;
+    }
+    .sidebar nav a {
+      display: block;
+      padding: 12px;
+      text-align: center;
+      color: #d6336c;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .sidebar nav a.active,
+    .sidebar nav a:hover {
+      background: #ffccd9;
+    }
+    /* 内容区 */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    section {
+      display: none;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    section.active {
+      display: block;
+    }
+    h2 {
+      color: #d6336c;
+      margin-bottom: 15px;
+    }
+    /* 通用表单 & 列表样式 */
+    form input,  
+    input[type="radio"] {
+    width: auto;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .quiz-question label {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 16px;
+    cursor: pointer;
+  }
+  .quiz-question {
+    margin-bottom: 16px;
+}
+    form select, form textarea, form button {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ffccd9;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    form button {
+      background: #ffccd9;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    ul { list-style: none; }
+    ul li { padding: 8px; border-bottom: 1px dashed #ffccd9; }
+
+    /* 心情曲线自适应 */
+    #mood-canvas {
+      width: 100%;
+      height: 200px;
+      border: 1px solid #ffccd9;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 侧边拉栏 -->
+  <aside class="sidebar">
+    <nav>
+      <a href="#" data-target="diary">甜蜜日记</a>
+      <a href="#" data-target="travel">旅行计划</a>
+      <a href="#" data-target="quiz">互动小测试</a>
+      <a href="#" data-target="records">书影音记录</a>
+    </nav>
+  </aside>
+
+  <!-- 主体内容 -->
+  <main class="content">
+    <!-- 1. 甜蜜日记 -->
+    <section id="diary">
+      <h2>我们的甜蜜日记</h2>
+      <form id="diary-form">
+        <label>日期</label>
+        <input type="date" id="diary-date" required>
+        <label>心情评分（1-10）</label>
+        <input type="number" id="diary-mood" min="1" max="10" required>
+        <label>日记内容</label>
+        <textarea id="diary-text" rows="3" placeholder="写下今天的点滴……" required></textarea>
+        <button type="submit">添加日记</button>
+      </form>
+      <ul id="diary-entries"></ul>
+      <h3>心情曲线</h3>
+      <!-- 自适应宽度，不指定 width 属性 -->
+      <canvas id="mood-canvas"></canvas>
+    </section>
+
+    <!-- 2. 旅行计划 -->
+    <section id="travel">
+      <h2>我们的旅行计划</h2>
+      <form id="travel-form">
+        <input type="text" id="travel-destination" placeholder="输入你们想去的地方" required>
+        <button type="submit">添加目的地</button>
+      </form>
+      <ul id="travel-list"></ul>
+    </section>
+
+    <!-- 互动小测试模块 -->
+    <section id="quiz">
+        <h2>互动小测试</h2>
+        <form id="quiz-form">
+          <div class="quiz-question">
+            <label>1. 你觉得我最喜欢的颜色是？</label>
+            <label><input type="radio" name="q1" value="a" required> 粉红</label>
+            <label><input type="radio" name="q1" value="b"> 蓝色</label>
+            <label><input type="radio" name="q1" value="c"> 绿色</label>
+          </div>
+          <div class="quiz-question">
+            <label>2. 我最爱的甜点是哪一种？</label>
+            <label><input type="radio" name="q2" value="a" required> 巧克力蛋糕</label>
+            <label><input type="radio" name="q2" value="b"> 草莓慕斯</label>
+            <label><input type="radio" name="q2" value="c"> 蓝莓芝士</label>
+          </div>
+          <div class="quiz-question">
+            <label>3. 当遇到难题时，我通常会：</label>
+            <label><input type="radio" name="q3" value="a" required> 咨询朋友</label>
+            <label><input type="radio" name="q3" value="b"> 静下心来思考</label>
+            <label><input type="radio" name="q3" value="c"> 找网络答案</label>
+          </div>
+          <button type="submit">提交测试</button>
+        </form>
+        <div id="quiz-result" class="result" style="display:none;"></div>
+      </section>
+
+    <!-- 4. 书影音记录 -->
+    <section id="records">
+      <h2>乖乖的书影音记录</h2>
+      <form id="record-form">
+        <select id="record-type" required>
+          <option value="">选择类型</option>
+          <option value="书">书</option>
+          <option value="电影">电影</option>
+          <option value="游戏">游戏</option>
+        </select>
+        <input type="text" id="record-title" placeholder="标题" required>
+        <textarea id="record-comment" rows="2" placeholder="简单评论"></textarea>
+        <button type="submit">添加记录</button>
+      </form>
+      <ul id="record-list"></ul>
+    </section>
+  </main>
+
+  <script>
+    // —— 侧边栏切换逻辑 —— 
+    const links = document.querySelectorAll('.sidebar nav a');
+    const sections = document.querySelectorAll('main section');
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        links.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        const target = link.dataset.target;
+        sections.forEach(sec => sec.id === target 
+                          ? sec.classList.add('active') 
+                          : sec.classList.remove('active'));
+        if (target === 'diary') resizeMoodCanvas();
+      });
+    });
+    // 默认激活第一个
+    links[0].click();
+
+
+    // —— 日记模块逻辑 & 自适应画布 —— 
+    const diaryForm = document.getElementById('diary-form');
+    const diaryDate = document.getElementById('diary-date');
+    const diaryMood = document.getElementById('diary-mood');
+    const diaryText = document.getElementById('diary-text');
+    const diaryEntriesEl = document.getElementById('diary-entries');
+    const moodCanvas = document.getElementById('mood-canvas');
+    const ctx = moodCanvas.getContext('2d');
+    let diaryEntries = JSON.parse(localStorage.getItem('diaryEntries')) || [];
+
+    // 设置今日为默认日期
+    diaryDate.valueAsDate = new Date();
+
+    function saveDiary() {
+      localStorage.setItem('diaryEntries', JSON.stringify(diaryEntries));
+    }
+    function renderDiary() {
+      diaryEntriesEl.innerHTML = '';
+      diaryEntries.sort((a,b)=> new Date(a.date)-new Date(b.date));
+      diaryEntries.forEach(entry => {
+        const li = document.createElement('li');
+        li.textContent = `${entry.date} – 心情：${entry.mood} – ${entry.text}`;
+        diaryEntriesEl.appendChild(li);
+      });
+    }
+    function drawMoodChart() {
+      const w = moodCanvas.width, h = moodCanvas.height;
+      ctx.clearRect(0,0,w,h);
+      if (!diaryEntries.length) return;
+      // … draw axes …
+      ctx.strokeStyle = "#ffccd9"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(40,10); ctx.lineTo(40,h-30);
+      ctx.lineTo(w-10,h-30); ctx.stroke();
+
+      // draw line
+      ctx.strokeStyle = "#d6336c"; ctx.lineWidth = 2;
+      ctx.beginPath();
+      const step = (w-60)/(diaryEntries.length-1);
+      diaryEntries.forEach((e,i)=>{
+        const x = 40 + step*i;
+        const y = ((10-e.mood)/9)*(h-40)+10;
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+        ctx.fillStyle="#d6336c";
+        ctx.beginPath(); ctx.arc(x,y,3,0,2*Math.PI); ctx.fill();
+      });
+      ctx.stroke();
+    }
+
+    function resizeMoodCanvas() {
+      const pw = moodCanvas.parentElement.clientWidth;
+      moodCanvas.width = pw;
+      moodCanvas.height = 200;
+      drawMoodChart();
+    }
+    window.addEventListener('resize', resizeMoodCanvas);
+
+    diaryForm.addEventListener('submit', e=>{
+      e.preventDefault();
+      diaryEntries.push({
+        date: diaryDate.value,
+        mood: Number(diaryMood.value),
+        text: diaryText.value.trim()
+      });
+      saveDiary(); renderDiary(); diaryForm.reset();
+      diaryDate.valueAsDate = new Date();
+      drawMoodChart();
+    });
+
+    renderDiary();
+    resizeMoodCanvas();
+
+
+    // —— 旅行模块 —— 
+    const travelForm = document.getElementById('travel-form');
+    const travelListEl = document.getElementById('travel-list');
+    let travelList = JSON.parse(localStorage.getItem('travelList')) || [];
+    function saveTravel(){ localStorage.setItem('travelList',JSON.stringify(travelList)); }
+    function renderTravel(){
+      travelListEl.innerHTML = '';
+      travelList.forEach(dest=>{
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(dest);
+        a.target = '_blank'; a.textContent = dest;
+        li.appendChild(a); travelListEl.appendChild(li);
+      });
+    }
+    travelForm.addEventListener('submit', e=>{
+      e.preventDefault();
+      const v = document.getElementById('travel-destination').value.trim();
+      travelList.push(v); saveTravel(); renderTravel(); travelForm.reset();
+    });
+    renderTravel();
+
+
+    // 互动小测试模块 JavaScript
+    (function() {
+      const quizForm = document.getElementById('quiz-form');
+      const quizResultEl = document.getElementById('quiz-result');
+      // 预设答案，仅供参考，可根据实际情况调整
+      const correctAnswers = {
+        q1: 'a', // 最喜欢的颜色：粉红
+        q2: 'b', // 最爱的甜点：草莓慕斯
+        q3: 'b'  // 遇到难题：静下心来思考
+      };
+
+      quizForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(quizForm);
+        let score = 0;
+        let total = 3;
+        for(let [key, value] of formData.entries()){
+          if(correctAnswers[key] === value){
+            score++;
+          }
+        }
+        const percentage = Math.round((score / total) * 100);
+        quizResultEl.style.display = 'block';
+        quizResultEl.textContent = `你的默契指数：${percentage}%`;
+      });
+    })();
+
+    // 书影音记录模块 JavaScript
+    (function() {
+      const recordForm = document.getElementById('record-form');
+      const recordListEl = document.getElementById('record-list');
+      let records = JSON.parse(localStorage.getItem('records')) || [];
+
+      function saveRecords() {
+        localStorage.setItem('records', JSON.stringify(records));
+      }
+
+      function renderRecords() {
+        recordListEl.innerHTML = '';
+        records.forEach((record, index) => {
+          const li = document.createElement('li');
+          li.textContent = `[${record.type}] ${record.title} - ${record.comment}`;
+          recordListEl.appendChild(li);
+        });
+      }
+
+      recordForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const type = document.getElementById('record-type').value;
+        const title = document.getElementById('record-title').value.trim();
+        const comment = document.getElementById('record-comment').value.trim();
+        if(type && title) {
+          records.push({ type, title, comment });
+          saveRecords();
+          renderRecords();
+          recordForm.reset();
+        }
+    });
+
+renderRecords();
+})();
+
+  </script>
+</body>
+</html>
