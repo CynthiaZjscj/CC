@@ -5,15 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cyber Fireworks for CC</title>
-    <style>
-        .link-container {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10; /* 让它浮在最上层 */
-        }
-    </style>
+   
     <style>
         body {
             margin: 0;
@@ -62,9 +54,6 @@
     </style>
 </head>
 <body>
-    <div class="back-toolbar">
-  <a href="index.html" class="back-btn">← 返回主页面</a>
-</div>
     <canvas></canvas>
     <h2>赛 博 烟 花~ </h2><br>
     <i>点击Start show及屏幕即可"燃放烟花"</i>
@@ -147,6 +136,8 @@
             height = canvas.height = window.innerHeight;
         });
     </script>
-   
+    <div class="link-container">
+    <a href="index.html">← 返回主页面</a>
+  </div>
 </body>
 </html>
