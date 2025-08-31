@@ -1,11 +1,10 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>主页面 · 乖乖的互动乐园</title>
-  <link rel="stylesheet" href="./style.css"/>
- <style>
+  <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       display: flex;
@@ -63,14 +62,8 @@
   </style>
 </head>
 <body>
-  
-</head>
-<body>
-  <!-- 移动端菜单开关（checkbox hack） -->
-  <input id="nav-toggle" type="checkbox" class="nav-toggle" aria-hidden="true"/>
-
-  <aside class="sidebar" role="navigation">
-    <div class="brand">Cosmo × Cynthia</div>
+  <button id="sidebar-toggle" class="toggle-btn">☰</button>
+  <aside class="sidebar">
     <nav>
       <a href="index.html" class="active">🏠 主页面</a>
       <a href="cyber_fireworks.html">赛博烟花</a>
@@ -78,16 +71,10 @@
       <a href="interactive_diary.html">互动日记</a>
       <a href="cheer_up.html">哄老婆专用</a>
       <a href="brother_card.html">弟弟中考祝福卡</a>
-      <a href="brother_card2.html">倒计时祝福语</a>
+      <a href="countdown.html">倒计时祝福语</a>
       <a href="time_capsule.html">七夕时间胶囊</a>
     </nav>
-  <label for="nav-toggle" class="close-btn" aria-label="关闭侧边栏">×</label>
   </aside>
-
-  <header class="topbar">
-    <label for="nav-toggle" class="hamburger" aria-label="打开侧边栏">☰</label>
-    <h1>Sweet Moment</h1>
-  </header>
 
   <main class="content">
     <h1>欢迎来到乖乖的互动乐园！</h1>
