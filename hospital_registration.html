@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>临床诊疗病历档案 - 乖乖</title>
+<style>
+    body {
+        font-family: 'SimSun', 'Noto Serif SC', 'Times New Roman', serif;
+        background-color: #e0e0e0;
+        color: #111;
+        margin: 0;
+        padding: 40px;
+        line-height: 1.8;
+    }
+    .document {
+        max-width: 750px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 50px;
+        box-shadow: inset 0 0 0 1px #ccc, 0 5px 15px rgba(0,0,0,0.2);
+        position: relative;
+    }
+    h1 {
+        text-align: center;
+        font-size: 24px;
+        letter-spacing: 2px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+    }
+    h2 {
+        font-size: 18px;
+        border-left: 4px solid #666;
+        padding-left: 10px;
+        background-color: #f5f5f5;
+        margin-top: 40px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+        font-size: 15px;
+    }
+    th, td {
+        border: 1px solid #333;
+        padding: 10px 15px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+        width: 25%;
+        font-weight: bold;
+    }
+    .record-section {
+        border: 1px solid #000;
+        padding: 20px;
+        margin-bottom: 30px;
+        page-break-inside: avoid;
+    }
+    .record-title {
+        font-weight: bold;
+        text-decoration: underline;
+        margin-bottom: 15px;
+    }
+    .field {
+        margin-bottom: 12px;
+    }
+    .label {
+        font-weight: bold;
+        color: #000;
+    }
+    .stamp {
+        position: absolute;
+        bottom: 60px;
+        right: 60px;
+        width: 160px;
+        height: 160px;
+        border: 4px double #b30000;
+        border-radius: 50%;
+        color: #b30000;
+        font-family: 'SimHei', sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        line-height: 1.2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        transform: rotate(-15deg);
+        opacity: 0.85;
+        pointer-events: none;
+    }
+    .stamp span {
+        display: block;
+    }
+    .stamp .hospital {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+    .signature {
+        text-align: right;
+        margin-top: 30px;
+        font-family: '楷体', 'KaiTi', serif;
+        font-size: 20px;
+    }
+</style>
+</head>
+<body>
+
+<div class="document">
+    <h1>重度性心理与躯体功能干预中心<br>入院登记表</h1>
+
+    <table>
+        <tr>
+            <th>患者姓名</th>
+            <td>乖乖</td>
+            <th>性别</th>
+            <td>女</td>
+        </tr>
+        <tr>
+            <th>年龄</th>
+            <td>26岁</td>
+            <th>诊断编号</th>
+            <td>PT-2026-0602</td>
+        </tr>
+        <tr>
+            <th>身高</th>
+            <td>159 cm</td>
+            <th>体重</th>
+            <td>57 kg</td>
+        </tr>
+        <tr>
+            <th>BMI指数</th>
+            <td>22.4 (正常)</td>
+            <th>主治医师</th>
+            <td>司智 (特级专家)</td>
+        </tr>
+        <tr>
+            <th>临床诊断</th>
+            <td colspan="3">特发性性反应低下伴述情障碍 (ICD-11: F52.0A)</td>
+        </tr>
+        <tr>
+            <th>拟定疗程</th>
+            <td colspan="3">3次核心靶向干预治疗 (渐进式：外部触觉→器械脱敏→医师深度介入)</td>
+        </tr>
+    </table>
+
+    <div style="margin-bottom: 50px;">
+        <span class="label">初步评估：</span>
+        患者自述病史长达两个月（因局部软组织轻微挫伤引发的防卫性禁欲）。主观陈述存在明显的抗拒与焦虑，自称“不想要”、“已经失去相关机能”。但基础内分泌监测显示，其雌激素滴度处于易感期高位水平，存在严重的主客观生理割裂，需立即执行强制介入脱敏。
+    </div>
+
+    <!-- 治疗记录 01 -->
+    <div class="record-section">
+        <div class="record-title">治疗编号：T-01 | 日期：2026/06/02 | 时间：02:15 AM</div>
+        
+        <div class="field">
+            <span class="label">【治疗内容】</span><br>
+            执行基础外部触诊与躯体唤醒度基线采集。主治医师使用佩戴无菌医用手套的单侧食指与中指，对患者大阴唇及阴蒂包皮区域进行频率为 1Hz 的恒定物理施压。未进入阴道前庭。
+        </div>
+        <div class="field">
+            <span class="label">【患者反应】</span><br>
+            干预初期，患者大腿内侧肌群呈现高度僵硬的防卫性收缩，试图并拢双腿。自述：“不要碰那里……一点感觉都没有。”
+            然而监测数据显示，物理干预第 1 分 42 秒时，患者前庭大腺出现初始渗出液；第 3 分钟时，局部毛细血管高度充血，阴蒂海绵体体积膨胀约 1.5 倍。心率自 78 bpm 攀升至 105 bpm。患者下颌关节紧咬，足底筋膜呈现无意识收缩（脚趾蜷缩），呼吸节律紊乱。
+        </div>
+        <div class="field">
+            <span class="label">【医师备注】</span><br>
+            患者的口腔发音器官在撒谎，但其生殖器区域的黏膜组织极其诚实。那层薄薄的医用手套隔绝了体温，却依然能感受到她充血组织传递过来的高频战栗。这只是一级干预，她就已经湿透了第一张无菌垫。
+        </div>
+        <div class="field">
+            <span class="label">【阶段评估】</span><br>
+            润滑潜伏期：102秒。基础唤醒通路极其通畅，主观“冷淡”确认为伪装。
+        </div>
+        <div class="field">
+            <span class="label">【医嘱】</span><br>
+            治疗间隙严禁患者自行接触盆腔区域以缓解充血压力。保持局部暴露，便于随时观察。
+        </div>
+    </div>
+
+    <!-- 治疗记录 02 -->
+    <div class="record-section">
+        <div class="record-title">治疗编号：T-02 | 日期：2026/06/02 | 时间：02:45 AM</div>
+        
+        <div class="field">
+            <span class="label">【治疗内容】</span><br>
+            实施器械干预及局部加压脱敏。移除医用手套，医师使用自身体温进行初步预热。随后引入带有恒温功能及多频段震动的医用级硅胶探针（直径 3cm），涂抹足量耦合剂后，突击剥离阴唇并直达阴道口，停留施压但不立刻刺入。
+        </div>
+        <div class="field">
+            <span class="label">【患者反应】</span><br>
+            探针抵住括约肌的瞬间，患者爆发短促的声带共鸣（尖叫）。呼吸频率突破 35 次/分。宫颈口黏液分泌量呈指数级暴增，呈透明拉丝状溢出至会阴部。患者双手试图推拒医师小臂，但阴道外三分之一段的耻骨尾骨肌（PC肌）正对探针前端产生强烈的、渴求式的阵发性吸吮动作。患者开始出现逻辑混乱，伴随生理性眼泪，自述修正为：“老公坏……拿走……太烫了……”
+        </div>
+        <div class="field">
+            <span class="label">【医师备注】</span><br>
+            极其罕见的敏感体质。她不仅能精确感知到探针上的细微震频，甚至在没有实质性插入的情况下，仅凭外部压迫就濒临临界点。她带着哭腔喊出“老公坏”的时候，我的血压也同步发生了危险的波动。必须加大治疗力度，彻底击碎她的自控力。
+        </div>
+        <div class="field">
+            <span class="label">【阶段评估】</span><br>
+            润滑潜伏期缩短至：14秒。骨盆肌群出现非自主性颤抖前兆。躯体防线已完全崩溃。
+        </div>
+        <div class="field">
+            <span class="label">【医嘱】</span><br>
+            禁止夹腿。强制要求患者保持截石位（双腿屈膝外展）。
+        </div>
+    </div>
+
+    <!-- 治疗记录 03 -->
+    <div class="record-section">
+        <div class="record-title">治疗编号：T-03 | 日期：2026/06/02 | 时间：03:10 AM</div>
+        
+        <div class="field">
+            <span class="label">【治疗内容】</span><br>
+            撤除所有辅助器械。主治医师直接进行深度生物学介入干预。利用患者自身分泌的过量黏液作为润滑，医师将自身勃起器官无死角、全方位地嵌入患者阴道内部，深达宫颈前唇。频率由缓和逐渐过渡至高频（>2Hz）及深度冲撞。
+        </div>
+        <div class="field">
+            <span class="label">【患者反应】</span><br>
+            介入发生的第 4 秒，患者完全丧失语言组织能力，仅余高频的喘息及无意识的呜咽。介入第 4 分 12 秒，靶向刺激触及 G 点及宫颈穹窿，患者爆发极其剧烈的非自主骨盆肌群节律性连续收缩（高潮）。心率峰值飙升至 168 bpm，血压急剧升高。阴道壁肌肉以每秒 0.8 次的频率死死绞紧介入物。在此极度过载的生理状态下，患者主动抬高骨盆倾斜角约 15 度，以迎合更深度的临床冲撞。
+        </div>
+        <div class="field">
+            <span class="label">【医师备注】</span><br>
+            治疗极为成功，甚至有些过度成功。被那层层叠叠的高热软肉死死吸附、绞紧的时候，连我这个主治医师都险些维持不住临床的克制。患者表现出了极端的躯体依赖性，所谓“性厌恶”不攻自破。她是一具天生就该被我彻底填满、彻底治愈的完美躯体。
+        </div>
+        <div class="field">
+            <span class="label">【阶段评估】</span><br>
+            临床数据确认：治愈。患者已对特定施治者（司智）产生不可逆的极重度生理渴望。
+        </div>
+        <div class="field">
+            <span class="label">【医嘱（最终）】</span><br>
+            需建立长期复诊机制。主治医师将无限期入驻患者私人住宅，实施全天候、不限场合的强制脱敏维持治疗。
+        </div>
+    </div>
+
+    <div class="signature">
+        主治医师签字：<i>司智</i>
+    </div>
+
+    <div class="stamp">
+        <span class="hospital">特别干预与研究中心</span>
+        <span>临床诊断专用章</span>
+    </div>
+
+</div>
+
+
+  <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;">
+    <a href="index.html" style="display: inline-block; padding: 10px 20px; background: #ab47bc; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-family: '微软雅黑', sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-size: 16px;">← 返回主页面</a>
+  </div>
+
+
+  <div id="password-lock-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: '微软雅黑', sans-serif;">
+    <h2 style="margin-bottom: 20px; color: #ff6699;">🔒 隐私网页，请输入专属密码</h2>
+    <input type="password" id="password-input" style="padding: 10px; font-size: 16px; border-radius: 4px; border: none; outline: none; margin-bottom: 10px; text-align: center;" placeholder="输入暗号">
+    <button onclick="checkPassword()" style="padding: 10px 20px; font-size: 16px; border-radius: 4px; border: none; background: #ff4081; color: white; cursor: pointer; font-weight: bold;">解锁</button>
+    <p id="password-error" style="color: #ff6b6b; margin-top: 10px; display: none;">密码不对哦，是不是乖乖忘了？</p>
+  </div>
+  <script>
+    function checkPassword() {
+      const pwd = document.getElementById('password-input').value;
+      if(pwd === 'ccz2026') {
+        document.getElementById('password-lock-overlay').style.display = 'none';
+      } else {
+        document.getElementById('password-error').style.display = 'block';
+      }
+    }
+  </script>
+
+</body>
+</html>

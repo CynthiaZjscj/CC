@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乖乖的专属 3D 粒子控制台</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #050505; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; }
+        /* 左下角摄像头实时反馈画中画 */
+        #pip-container { position: absolute; bottom: 20px; left: 20px; width: 320px; height: 240px; z-index: 10; border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); background: #000; }
+        .input_video { display: none; } /* 隐藏原始视频，只显示画了骨骼的 canvas */
+        .output_canvas { width: 100%; height: 100%; transform: scaleX(-1); } /* 镜像翻转，符合直觉 */
+        /* UI 面板 */
+        #ui-panel { position: absolute; top: 20px; left: 20px; z-index: 10; background: rgba(20,20,20,0.7); padding: 15px 25px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        h3 { margin: 0 0 10px 0; font-size: 16px; color: #ff9a9e; letter-spacing: 1px; }
+        .status { font-size: 12px; color: #a18cd1; margin-bottom: 5px; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="ui-panel">
+        <h3>✨ 乖乖的星尘引擎</h3>
+        <div class="status" id="gesture-status">等待摄像头唤醒...</div>
+        <div class="status" id="particle-status">粒子数量: 50,000 (自适应优化)</div>
+    </div>
+    <div id="pip-container">
+        <video class="input_video"></video>
+        <canvas class="output_canvas" width="320" height="240"></canvas>
+    </div>
+    <div id="canvas-container"></div>
+
+<script>
+// ================= 1. THREE.JS 3D 粒子系统初始化 =================
+const container = document.getElementById('canvas-container');
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x050505, 0.002);
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 150;
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // 性能优化
+container.appendChild(renderer.domElement);
+
+// 创建粒子 (折中采用50000个保证低配流畅)
+const particleCount = 50000;
+const geometry = new THREE.BufferGeometry();
+const positions = new Float32Array(particleCount * 3);
+const targetPositions = new Float32Array(particleCount * 3);
+const colors = new Float32Array(particleCount * 3);
+const color = new THREE.Color();
+
+for (let i = 0; i < particleCount; i++) {
+    // 初始位置：随机散布的星云
+    const x = (Math.random() - 0.5) * 400;
+    const y = (Math.random() - 0.5) * 400;
+    const z = (Math.random() - 0.5) * 400;
+    positions[i * 3] = x; positions[i * 3 + 1] = y; positions[i * 3 + 2] = z;
+    targetPositions[i * 3] = x; targetPositions[i * 3 + 1] = y; targetPositions[i * 3 + 2] = z;
+    // 梦幻粉紫配色
+    color.setHSL(0.8 + Math.random() * 0.2, 0.8, 0.6);
+    colors[i * 3] = color.r; colors[i * 3 + 1] = color.g; colors[i * 3 + 2] = color.b;
+}
+
+geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+// 材质：纯色发光质感
+const material = new THREE.PointsMaterial({
+    size: 1.5, vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.8
+});
+const particleSystem = new THREE.Points(geometry, material);
+scene.add(particleSystem);
+
+let currentMode = 'scatter'; // 当前形态
+let targetScale = 1; // 控制缩放
+
+// ================= 2. 核心数学形态算法 =================
+function updateTargetPositions(mode, handPos) {
+    for (let i = 0; i < particleCount; i++) {
+        let tx = 0, ty = 0, tz = 0;
+        const t = (i / particleCount) * Math.PI * 2;
+        
+        if (mode === 'fist') { // 握拳：向中心聚拢成高密度球体
+            const r = Math.random() * 20;
+            tx = handPos.x + r * Math.sin(t) * Math.cos(i);
+            ty = handPos.y + r * Math.sin(t) * Math.sin(i);
+            tz = r * Math.cos(t);
+        } else if (mode === '1') { // 1指：星形线 (Astroid)
+            const r = 40 + Math.random() * 10;
+            tx = handPos.x + r * Math.pow(Math.cos(t), 3);
+            ty = handPos.y + r * Math.pow(Math.sin(t), 3);
+            tz = (Math.random() - 0.5) * 20;
+        } else if (mode === '3') { // 3指：欧拉螺线近似 (银河漩涡)
+            const a = 0.5;
+            const r = a * i * 0.01;
+            tx = handPos.x + r * Math.cos(r);
+            ty = handPos.y + r * Math.sin(r);
+            tz = (Math.random() - 0.5) * 30;
+        } else if (mode === '4') { // 4指：利萨如图形
+            const r = 60;
+            tx = handPos.x + r * Math.sin(3 * t + Math.PI/2);
+            ty = handPos.y + r * Math.sin(2 * t);
+            tz = (Math.random() - 0.5) * 20;
+        } else { // 5指/默认：跟随手部张开扩散
+            tx = handPos.x + (Math.random() - 0.5) * 150 * targetScale;
+            ty = handPos.y + (Math.random() - 0.5) * 150 * targetScale;
+            tz = (Math.random() - 0.5) * 150 * targetScale;
+        }
+        targetPositions[i * 3] = tx;
+        targetPositions[i * 3 + 1] = ty;
+        targetPositions[i * 3 + 2] = tz;
+    }
+}
+
+// ================= 3. MEDIAPIPE 手势识别与 PIP =================
+const videoElement = document.getElementsByClassName('input_video')[0];
+const canvasElement = document.getElementsByClassName('output_canvas')[0];
+const canvasCtx = canvasElement.getContext('2d');
+const statusText = document.getElementById('gesture-status');
+
+function onResults(results) {
+    canvasCtx.save();
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+    
+    let activeHandPos = { x: 0, y: 0 };
+    
+    if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        const landmarks = results.multiHandLandmarks[0];
+        // 画白线骨骼
+        drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: '#FFFFFF', lineWidth: 2});
+        drawLandmarks(canvasCtx, landmarks, {color: '#ff9a9e', lineWidth: 1, radius: 2});
+        
+        // 映射坐标到 Three.js 场景 (简易映射)
+        activeHandPos.x = -(landmarks[9].x - 0.5) * 200; 
+        activeHandPos.y = -(landmarks[9].y - 0.5) * 150;
+        
+        // 手势判断逻辑 (极简版基于指尖和指关节Y轴对比)
+        let fingersUp = 0;
+        if(landmarks[8].y < landmarks[6].y) fingersUp++; // 食指
+        if(landmarks[12].y < landmarks[10].y) fingersUp++; // 中指
+        if(landmarks[16].y < landmarks[14].y) fingersUp++; // 无名指
+        if(landmarks[20].y < landmarks[18].y) fingersUp++; // 小指
+        if(landmarks[4].x < landmarks[3].x) fingersUp++; // 大拇指(近似)
+
+        if (fingersUp === 0) {
+            currentMode = 'fist'; statusText.innerText = "手势: 握拳 (星尘聚拢)"; targetScale = 0.2;
+        } else {
+            currentMode = fingersUp.toString();
+            statusText.innerText = `手势: ${fingersUp} 指变阵`;
+            targetScale = 1.0 + (fingersUp * 0.2); // 伸出的手指越多，越扩散
+        }
+        updateTargetPositions(currentMode, activeHandPos);
+    } else {
+        // 手离开视野，平滑散开
+        statusText.innerText = "手势: 未检测到 (待机游离)";
+        updateTargetPositions('scatter', {x: 0, y: 0});
+    }
+    canvasCtx.restore();
+}
+
+const hands = new Hands({locateFile: (file) => {
+    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+}});
+hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+hands.onResults(onResults);
+
+const cameraUtils = new Camera(videoElement, {
+    onFrame: async () => { await hands.send({image: videoElement}); },
+    width: 320, height: 240
+});
+cameraUtils.start();
+
+// ================= 4. 动画循环与缓动 =================
+function animate() {
+    requestAnimationFrame(animate);
+    const positions = particleSystem.geometry.attributes.position.array;
+    // 缓动算法：粒子平滑追踪目标位置，延迟极低
+    for (let i = 0; i < particleCount * 3; i++) {
+        positions[i] += (targetPositions[i] - positions[i]) * 0.08; 
+    }
+    particleSystem.geometry.attributes.position.needsUpdate = true;
+    particleSystem.rotation.y += 0.001; // 整体缓慢自转，增加深空感
+    renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+  <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;">
+    <a href="index.html" style="display: inline-block; padding: 10px 20px; background: #ab47bc; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-family: '微软雅黑', sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-size: 16px;">← 返回主页面</a>
+  </div>
+
+</body>
+</html>

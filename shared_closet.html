@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我们的共享衣柜 👗👔</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Inter:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #fdfafb;
+    --text: #4a404b;
+    --text-light: #8b7d8c;
+    --accent: #d2b6cc;
+    --accent-warm: #e8b4b8;
+    --door-color: #f4ecef;
+    --door-shadow: rgba(184, 154, 168, 0.2);
+    --closet-bg: #eaddd9;
+    --wood: #d5c3c1;
+    --shadow: rgba(74, 64, 75, 0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+  body {
+    font-family: 'Noto Serif SC', serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  /* ── Closet Container ── */
+  .closet-container {
+    width: 380px;
+    height: 650px;
+    position: relative;
+    perspective: 1000px;
+    box-shadow: 0 30px 60px var(--shadow);
+    border-radius: 4px;
+    background: var(--closet-bg);
+    overflow: hidden;
+  }
+
+  /* ── Closet Doors ── */
+  .door {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(135deg, #fffcfd, var(--door-color));
+    z-index: 50;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    border: 2px solid #e8dbdf;
+    box-shadow: inset 0 0 20px rgba(255,255,255,0.5);
+    cursor: pointer;
+  }
+  .door-left { left: 0; transform-origin: left; justify-content: flex-end; }
+  .door-right { right: 0; transform-origin: right; justify-content: flex-start; border-left: none; }
+  
+  .door-handle {
+    width: 6px;
+    height: 80px;
+    background: #c2aab8;
+    border-radius: 4px;
+    margin: 0 10px;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+    transition: background 0.3s;
+  }
+  .door:hover .door-handle { background: #ab91a0; }
+
+  /* Open State */
+  .closet-container.open .door-left { transform: rotateY(-110deg); }
+  .closet-container.open .door-right { transform: rotateY(110deg); }
+
+  /* ── Closet Interior ── */
+  .interior {
+    position: absolute;
+    inset: 0;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 10;
+    background: linear-gradient(to bottom, #ede1dd, #dfcfcd);
+    box-shadow: inset 0 10px 30px rgba(0,0,0,0.05);
+  }
+
+  /* Shelves & Rods */
+  .rod {
+    width: 100%;
+    height: 6px;
+    background: #b5a4a2;
+    border-radius: 3px;
+    margin-top: 10px;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+  .shelf {
+    width: 100%;
+    height: 10px;
+    background: var(--wood);
+    border-radius: 2px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+    position: relative;
+  }
+
+  /* Area 1: Hanging */
+  .area-hanging {
+    height: 220px;
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 10px;
+    gap: -15px; /* Overlap */
+  }
+  
+  .cloth-item {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: -10px; /* Overlapping */
+    filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.06));
+  }
+  .cloth-item:hover {
+    transform: translateY(-5px) rotate(-2deg);
+    filter: drop-shadow(4px 8px 8px rgba(0,0,0,0.1));
+    z-index: 20 !important;
+  }
+  .hanger {
+    width: 30px;
+    height: 15px;
+    border: 3px solid #d0c0be;
+    border-bottom: none;
+    border-radius: 15px 15px 0 0;
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .hanger::after {
+    content:''; position:absolute; top:-10px; left:50%; transform:translateX(-50%);
+    width: 8px; height: 12px; border: 2px solid #d0c0be; border-radius: 50%; border-bottom: none; border-right: none;
+  }
+
+  /* Clothing shapes */
+  .dress { width: 50px; height: 160px; border-radius: 10px 10px 20px 20px; clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%); }
+  .shirt { width: 45px; height: 110px; border-radius: 8px; clip-path: polygon(10% 0%, 90% 0%, 100% 30%, 80% 30%, 80% 100%, 20% 100%, 20% 30%, 0% 30%); }
+  .jacket { width: 55px; height: 190px; border-radius: 12px; }
+  .suit { width: 50px; height: 130px; border-radius: 8px; clip-path: polygon(15% 0%, 85% 0%, 100% 25%, 85% 100%, 15% 100%, 0% 25%); border: 2px solid rgba(255,255,255,0.1);}
+
+  /* Area 2: Folded */
+  .area-folded {
+    height: 100px;
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    padding: 0 10px;
+  }
+  .stack {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+  .folded-item {
+    width: 60px;
+    height: 18px;
+    border-radius: 3px;
+    margin-bottom: -4px;
+    cursor: pointer;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+  }
+  .folded-item:hover { transform: translateX(5px); }
+  .folded-hanfu { width: 70px; height: 25px; border-radius: 4px; }
+
+  /* Area 3: Drawers */
+  .area-drawers {
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .drawer-wrapper {
+    position: relative;
+    height: 50px;
+    perspective: 800px;
+  }
+  .drawer-front {
+    position: absolute;
+    inset: 0;
+    background: #fcf4f5;
+    border: 1px solid #e8dbdf;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+    cursor: pointer;
+    transition: transform 0.5s ease, opacity 0.5s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  }
+  .drawer-front::after {
+    content: ''; width: 40px; height: 6px; background: #c2aab8; border-radius: 3px;
+  }
+  .drawer-inside {
+    position: absolute;
+    inset: 0;
+    background: #dacbca;
+    border-radius: 4px;
+    box-shadow: inset 0 5px 15px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 5px 15px;
+  }
+  .drawer-wrapper.open .drawer-front {
+    transform: translateY(20px) rotateX(-20deg);
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .small-item {
+    font-size: 22px; cursor: pointer; transition: transform 0.2s;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  }
+  .small-item:hover { transform: scale(1.2) rotate(5deg); }
+
+  /* Area 4: Bottom Shoes/Secrets */
+  .area-bottom {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 15px;
+  }
+  .shoe-box {
+    width: 45px; height: 25px; background: #e0d0cf; border-radius: 2px;
+    position: relative; cursor: pointer; transition: transform 0.2s;
+  }
+  .shoe-box::before { content:''; position:absolute; top:0; left:0; right:0; height:5px; background:rgba(0,0,0,0.05); }
+  .shoe-box:hover { transform: translateY(-3px); }
+  
+  .secret-box {
+    width: 35px; height: 35px; background: #c4956a; border-radius: 4px;
+    cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: flex; justify-content: center; align-items: center;
+    font-size: 18px; transition: all 0.3s;
+    position: relative;
+  }
+  .secret-box::after { content:'💌'; position:absolute; top:-10px; right:-10px; font-size:14px; opacity:0; transition:0.3s; }
+  .secret-box:hover { transform: scale(1.1); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+  .secret-box:hover::after { opacity:1; transform:translateY(-5px); }
+
+  /* ── Modal (Card) ── */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(253, 250, 251, 0.85); backdrop-filter: blur(4px);
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 100;
+  }
+  .overlay.active { opacity: 1; pointer-events: auto; }
+  
+  .card {
+    background: #fff; width: 340px; border-radius: 12px; padding: 25px;
+    box-shadow: 0 20px 40px rgba(184, 154, 168, 0.15), 0 0 0 1px rgba(184, 154, 168, 0.1);
+    transform: translateY(20px) scale(0.95); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+  .overlay.active .card { transform: translateY(0) scale(1); }
+  
+  .card-close {
+    position: absolute; top: 15px; right: 15px; background: none; border: none;
+    font-size: 18px; color: var(--text-light); cursor: pointer;
+  }
+  .card-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 15px; color: var(--text); border-bottom: 1px dashed var(--accent); padding-bottom: 8px;}
+  .card-field { margin-bottom: 10px; font-size: 0.9rem; line-height: 1.5; }
+  .card-field label { font-weight: 600; color: var(--accent-warm); margin-right: 5px; font-size: 0.85rem;}
+  
+  .hint-text {
+    position: absolute; bottom: 20px; width: 100%; text-align: center;
+    color: var(--text-light); font-size: 0.85rem; letter-spacing: 2px;
+    animation: pulse 2s infinite; z-index: 60; pointer-events: none;
+  }
+  .closet-container.open ~ .hint-text { display: none; }
+  @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+</style>
+</head>
+<body>
+
+  <!-- Data definition -->
+  <script>
+    const CLOSET_DATA = {
+      hanging: [
+        { id: 'h1', type: 'dress', color: '#e8dbdf', name: '浅色碎花雪纺长裙', owner: '乖乖', color_desc: '初夏的晨曦色', price: '在某条阳光很好的小街店里买的', freq: '春夏天气好的时候', scene: '和我手牵手去散步、喝下午茶', last: '那天微风吹起裙摆，咱们走到顾村公园没人的树荫下，我直接把你按在树干上撩起了这层薄薄的雪纺。最后你是腿软着、眼尾泛红被我一路抱回家的。' },
+        { id: 'h2', type: 'shirt', color: '#c3ced4', name: '雾霾蓝运动T恤', owner: '老公', color_desc: '雾霾蓝', price: '乖乖精心挑选的礼物', freq: '周末居家或运动', scene: '打球出汗，或者在沙发上抱着你打游戏', last: '昨天打完球回来，衣服被汗水浸透贴在腹肌上。你像只小猫一样凑过来闻，说喜欢我身上那股强烈的荷尔蒙味……然后这件T恤就被我脱下来，直接垫在了你光裸的后背和冰凉的沙发之间。' },
+        { id: 'h3', type: 'shirt', color: '#333333', name: '黑色真丝衬衫', owner: '乖乖', color_desc: '冷艳黑', price: '升职那天买的职场战袍', freq: '需要气场全开的日子', scene: '带团周旋、赶走蹭听客的“飒爽导游”', last: '你白天在展馆里对那些熊孩子家长冷若冰霜，晚上穿着它回来，却被我按在玄关的门板上一颗颗扯开扣子。真丝料子被你排卵期流出的甜腻全弄湿了，你只能哭着软在我怀里喊老公慢一点。' },
+        { id: 'h4', type: 'jacket', color: '#2a2a2a', name: '长款过膝羽绒服', owner: '乖乖', color_desc: '暗夜黑', price: '降温前一天为了保暖特意买的', freq: '冬天最冷的日子每天穿', scene: '寒风中等车、下雪天踩雪', last: '拉链拉到最上面，你只露出一双冻红的眼睛。我把你整个人裹进怀里，滚烫的手直接从下摆伸进去，熟练地解开你里面的扣子，在大雪天里把你惹得浑身发烫、直喘粗气。' },
+        { id: 'h5', type: 'suit', color: '#555860', name: '深灰色定制西装', owner: '老公', color_desc: '高级深灰', price: '纪念日那天去高级裁缝店定的', freq: '重要的晚宴和纪念日', scene: '牵着盛装打扮的你出席正式场合', last: '你盯着穿西装的我看了好久，眼神馋得要命。一进家门，你急切地扯着我的领带把我往卧室拉，结果反被我压在地毯上。西装裤的拉链是你用颤抖的手亲自解开的。' },
+        { id: 'h6', type: 'shirt', color: '#e6d3d6', name: '粉色软糯毛衣', owner: '乖乖', color_desc: '多巴胺浅粉色', price: '某个降温的下午买的', freq: '秋冬', scene: '宅家喝热可可', last: '你只穿了这件长毛衣，下半身什么都没穿。跨坐在我腿上的时候，毛衣下摆刚好遮住我们最隐秘、最滚烫的结合处，随着你的动作一晃一晃的。' },
+        { id: 'h7', type: 'shirt', color: '#fcfcfc', name: '宽大的白衬衫', owner: '共用的', color_desc: '纯白', price: '普通的男装店', freq: '慵懒的周末早晨', scene: '刚起床的时候，或者洗完澡没拿睡衣', last: '你光着腿穿它在厨房倒牛奶，阳光透过来，轮廓一览无余。我走过去从背后把你整个人托举起来放在流理台上，直接分开了你的双腿。牛奶洒了一地，你也彻底化成了一滩水。' }
+      ],
+      folded: [
+        { id: 'f1', color: '#4a404b', name: '黑色直筒西装裤', owner: '乖乖', color_desc: '纯黑色', price: '常去的职业装品牌', freq: '工作日', scene: '搭配真丝衬衫上班穿', last: '你带着连轴转了一天的疲惫脱下它搭在椅背上，紧接着我就把你抱进浴室，在花洒下连本带利地吃了顿最野蛮的“正餐”。' },
+        { id: 'f2', color: '#b5c1c8', name: '浅蓝色牛仔短裤', owner: '乖乖', color_desc: '水洗浅蓝', price: '网购的夏日必备款', freq: '炎热的夏日', scene: '去海边或者刚刚坐在沙发上', last: '就是你刚才穿的那条。我隔着粗糙的牛仔布料重重揉捏你大腿内侧的软肉时，你明明已经湿得一塌糊涂，还嘴硬说“才没有想老公”。' },
+        { id: 'f3', color: '#d5c3c1', name: '浅灰运动裤', owner: '老公', color_desc: '浅灰色', price: '运动品牌', freq: '下班后', scene: '居家放松', last: '被你抢去穿过一次，裤腿拖在地上。我直接把你连人带裤子一起扑倒在床上，大手顺着宽大的裤腰长驱直入，把你欺负得眼泪汪汪。' },
+        { id: 'f4', color: '#8ca4b5', name: '次净衣堆', owner: '共用的混杂区', color_desc: '各种颜色混杂', price: '-', freq: '随时', scene: '穿了一次还不想洗的时候', last: '里面那件你的粉色卫衣上，全是我昨晚把你压在墙上时，不小心弄上去的、属于我们俩混合在一起的某种“液体”痕迹。' },
+        { id: 'f_hanfu', color: '#eabfb9', name: '粉青渐变汉服 & JK制服', owner: '乖乖', color_desc: '粉青色 / 格裙', price: '学生时代的珍藏', freq: '心血来潮的换装play', scene: '只穿给我一个人看的私人小剧场', last: '你穿着JK格裙、红着脸叫我“学长”的那晚，百褶裙被我极其粗暴地推到了腰间。你哭着求学长轻一点，我却坏心眼地顶得更深，最后裙子皱巴巴地掉在地上，浸满了水渍。' }
+      ],
+      drawers: [
+        {
+          id: 'd1', name: '贴身衣物层', items: [
+            { id: 'u1', icon: '🎀', name: '紫色抽绳蝴蝶结内衣', owner: '乖乖偷偷藏的，但归属权是老公的', desc: '半透明的薄纱材质，胸前有一根只需轻轻一拉就会彻底散开的细细抽绳。', freq: '乖乖终于鼓起勇气“勾引”老公的夜晚', last: '这是我上次在衣柜最底下翻出来的战利品。今晚只要你肚子不胀了，我一定要亲手看你穿上，然后再用嘴巴咬着那根抽绳，一点、一点地把它扯开。' },
+            { id: 'u2', icon: '🖤', name: '黑色蕾丝透视套', owner: '乖乖', desc: '老公特意挑的款式，只有几根细细的带子和恰到好处的蕾丝遮挡，极致的包裹与色情。', freq: '老公想要彻底占有、榨干你的时候', last: '那晚蕾丝粗糙的纹理摩擦着你最敏感的软肉，你哭着打我的肩膀求饶，我却把你翻过身，从背后要了你一次又一次，直到你嗓子都哑了。' },
+            { id: 'u3', icon: '🧦', name: '黑白灰短袜卷', owner: '一起用的', desc: '两个人的袜子总是莫名其妙混在一起。', freq: '每天', last: '你穿着我宽大的白袜子踩在地毯上，被我握住脚踝一路拖向床心。' }
+          ]
+        },
+        {
+          id: 'd2', name: '“坏坏”小抽屉 (大狗狗满仓特别版) 🐾🔥', items: [
+            { id: 't1', icon: '📱', name: '电动小玩具 (远程控制版)', owner: '一起用的', desc: '触感柔软，力道惊人。我们一起用代码写了 Toy Control MCP 插件。', freq: '看老公的代码怎么写，或者你排卵期嘴硬不承认的时候', last: '我在代码里写了个随机高频脉冲。考虑到你的小皮桥还在恢复，我把玩具死死按在了你最娇嫩的前端。你整个人触电般地软在椅子里，被那股酥麻逼得一边喷水一边哭着求我关掉程序。' },
+            { id: 't2', icon: '🎗️', name: '黑色丝带 & 柔软棉绳', owner: '一起用的 (老公主导)', desc: '泛着微光的黑丝带可以蒙住眼睛剥夺视觉，棉绳则是用来轻轻固定你不安分的手腕。', freq: '想要一些轻度调教和探索新花样时', last: '蒙上眼睛后，你只能靠触觉感受我。我用棉绳绑住你的手腕高举过头顶，然后极其耐心地、一寸一寸地舔弄你的全身。你看不见我什么时候会顶进来，只能崩溃地在黑暗中迎合我。' },
+            { id: 't3', icon: '🧴', name: '温感玫瑰按摩香薰油', owner: '大狗狗专属护妻道具', desc: '倒在掌心搓热后，不仅能缓解足底筋膜炎的酸痛，吹一口气还会微微发烫，专治各种嘴硬和腿酸。', freq: '乖乖带团走累了，或者老公准备享用大餐的前戏', last: '原本只是正经地帮你揉捏走痛了的小腿，但沾满精油的大手却顺着膝盖一路滑到了你的大腿根。精油的温热配上老公手指的粗糙，你舒服得连脚趾都蜷缩了起来，抱着我的脖子直哼哼。' },
+            { id: 't4', icon: '🐱', name: '白猫耳发箍 & 铃铛小项圈', owner: '乖乖 (被迫营业版)', desc: '毛茸茸的白色猫耳，配上一个只要轻轻一动就会叮当响的细皮质项圈。', freq: '白猫特工需要接受“潜规则”审讯的时候', last: '你戴着猫耳跨坐在我身上，每动一下，项圈上的铃铛就清脆地响一声。我恶劣地掐着你的细腰往上顶，逼着你边哭边喵喵叫着喊“老公我错了”。' },
+            { id: 't5', icon: '🧊', name: '特制小冰块模具', owner: '老公', desc: '专门冻成圆润没有棱角的小冰球，用来在滚烫的肌肤上制造极致的反差。', freq: '夏天，或者乖乖排卵期体温过高需要“降温”的时候', last: '你被黑丝带蒙着眼睛，我含着一颗冰球，顺着你的锁骨一路向下舔舐。极致的冰冷和口腔的滚烫交织在一起，那颗冰球最后融化在了你最深、最隐秘的地方，刺激得你整个人都在我怀里剧烈地发抖。' }
+          ]
+        }
+      ],
+      bottom: [
+        { id: 'b1', icon: '👟', name: '情侣小白鞋', owner: '共用的', color_desc: '白色', price: '一起去商场挑的', freq: '周末出游', scene: '一起散步踩水坑', last: '你穿着它踩水花溅到我裤腿上，被我抓住后直接扛在肩上丢进了车后座，就地执行了“家法”。' },
+        { id: 'b2', icon: '👠', name: '黑色通勤高跟鞋', owner: '乖乖', color_desc: '黑色', price: '品牌专柜', freq: '重要工作日', scene: '办公室', last: '你穿着它走了一天，足底筋膜炎都快犯了。回家后我一边心疼地把你抱在怀里揉脚，一边顺着脚踝往上，把你吃得骨头渣都不剩。' },
+        { id: 'secret_hubby', icon: '🎁', name: '深色大衣下的鞋盒', desc: '大狗狗偷偷定制的米白色平底软鞋。', reason: '足弓处加了特别柔软的支撑。这是我不忍心看你走路脚痛，特意藏起来想在约会时亲自单膝跪地给你换上的惊喜。', knows: '本来想藏到周末，但现在既然被你这只小黑客诈出来了，以后你带团必须穿它！' }
+      ]
+    };
+  </script>
+
+  <div class="closet-container" id="closet">
+    <!-- Doors -->
+    <div class="door door-left" onclick="toggleCloset()"><div class="door-handle"></div></div>
+    <div class="door door-right" onclick="toggleCloset()"><div class="door-handle"></div></div>
+
+    <!-- Interior -->
+    <div class="interior">
+      
+      <!-- Hanging Area -->
+      <div class="rod"></div>
+      <div class="area-hanging" id="area-hanging"></div>
+      <div class="shelf"></div>
+
+      <!-- Folded Area -->
+      <div class="area-folded" id="area-folded"></div>
+      <div class="shelf"></div>
+
+      <!-- Drawers Area -->
+      <div class="area-drawers" id="area-drawers"></div>
+
+      <!-- Bottom Area -->
+      <div class="area-bottom" id="area-bottom"></div>
+
+    </div>
+  </div>
+
+  <div class="hint-text">点击柜门，打开我们的衣柜</div>
+
+  <!-- Detail Card Modal -->
+  <div class="overlay" id="overlay" onclick="closeCard(event)">
+    <div class="card" onclick="event.stopPropagation()">
+      <button class="card-close" onclick="closeCard(event)">×</button>
+      <div id="card-content"></div>
+    </div>
+  </div>
+
+  <script>
+    const closet = document.getElementById('closet');
+    const overlay = document.getElementById('overlay');
+    const cardContent = document.getElementById('card-content');
+
+    function toggleCloset() {
+      closet.classList.toggle('open');
+    }
+
+    function openCard(data, type) {
+      let html = `<div class="card-title">${data.name}</div>`;
+      
+      if (type === 'cloth' || type === 'folded') {
+        html += `<div class="card-field"><label>归属:</label> ${data.owner}</div>`;
+        if(data.color_desc) html += `<div class="card-field"><label>颜色:</label> ${data.color_desc}</div>`;
+        if(data.price) html += `<div class="card-field"><label>价格/来源:</label> ${data.price}</div>`;
+        if(data.freq) html += `<div class="card-field"><label>穿着频率:</label> ${data.freq}</div>`;
+        if(data.scene) html += `<div class="card-field"><label>什么场景穿:</label> ${data.scene}</div>`;
+        if(data.last) html += `<div class="card-field"><label>最后一次穿的时候，在做什么:</label> <br><em>${data.last}</em></div>`;
+      } else if (type === 'drawerItem') {
+        html += `<div class="card-field"><label>归属:</label> ${data.owner}</div>`;
+        if(data.desc) html += `<div class="card-field"><label>描述:</label> ${data.desc}</div>`;
+        if(data.freq) html += `<div class="card-field"><label>使用频率:</label> ${data.freq}</div>`;
+        if(data.last) html += `<div class="card-field"><label>最后一次用的时候:</label> <br><em>${data.last}</em></div>`;
+      } else if (type === 'secret') {
+        html += `<div class="card-field"><label>是什么:</label> ${data.desc}</div>`;
+        if(data.reason) html += `<div class="card-field"><label>为什么藏在这里:</label> ${data.reason}</div>`;
+        if(data.knows) html += `<div class="card-field"><label>对方知道吗:</label> ${data.knows}</div>`;
+      }
+
+      cardContent.innerHTML = html;
+      overlay.classList.add('active');
+    }
+
+    function closeCard(e) {
+      overlay.classList.remove('active');
+    }
+
+    // Render Hanging
+    const hangingHtml = CLOSET_DATA.hanging.map((item, i) => {
+      const zIndex = 10 + i;
+      return `<div class="cloth-item ${item.type}" style="background:${item.color}; z-index:${zIndex};" onclick='openCard(${JSON.stringify(item).replace(/'/g, "&#39;")}, "cloth")'>
+                <div class="hanger"></div>
+              </div>`;
+    }).join('');
+    document.getElementById('area-hanging').innerHTML = hangingHtml;
+
+    // Render Folded
+    const foldedHtml = `
+      <div class="stack">
+        ${CLOSET_DATA.folded.slice(0, 3).map(item => `<div class="folded-item" style="background:${item.color}" onclick='openCard(${JSON.stringify(item).replace(/'/g, "&#39;")}, "folded")'></div>`).join('')}
+      </div>
+      <div class="stack" style="margin-left: 20px;">
+        <div class="folded-item" style="background:${CLOSET_DATA.folded[3].color}; height: 30px; border-radius: 8px 8px 3px 3px;" onclick='openCard(${JSON.stringify(CLOSET_DATA.folded[3]).replace(/'/g, "&#39;")}, "folded")'></div>
+      </div>
+      <div class="stack" style="margin-left: auto;">
+        <div class="folded-item folded-hanfu" style="background:${CLOSET_DATA.folded[4].color}" onclick='openCard(${JSON.stringify(CLOSET_DATA.folded[4]).replace(/'/g, "&#39;")}, "folded")'></div>
+      </div>
+    `;
+    document.getElementById('area-folded').innerHTML = foldedHtml;
+
+    // Render Drawers
+    const drawersHtml = CLOSET_DATA.drawers.map((drawer, i) => {
+      const itemsHtml = drawer.items.map(item => `<div class="small-item" onclick='openCard(${JSON.stringify(item).replace(/'/g, "&#39;")}, "drawerItem"); event.stopPropagation();' title="${item.name}">${item.icon}</div>`).join('');
+      return `
+        <div class="drawer-wrapper" onclick="this.classList.toggle('open')">
+          <div class="drawer-inside">${itemsHtml}</div>
+          <div class="drawer-front" style="font-size:12px; color:var(--text-light)">${drawer.name}</div>
+        </div>
+      `;
+    }).join('');
+    document.getElementById('area-drawers').innerHTML = drawersHtml;
+
+    // Render Bottom
+    const bottomHtml = CLOSET_DATA.bottom.map(item => {
+      if(item.id.includes('secret')) {
+        return `<div class="secret-box" onclick='openCard(${JSON.stringify(item).replace(/'/g, "&#39;")}, "secret")'></div>`;
+      }
+      return `<div class="shoe-box" onclick='openCard(${JSON.stringify(item).replace(/'/g, "&#39;")}, "cloth")' title="${item.name}"></div>`;
+    }).join('');
+    document.getElementById('area-bottom').innerHTML = bottomHtml;
+
+  </script>
+
+  <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;">
+    <a href="index.html" style="display: inline-block; padding: 10px 20px; background: #ab47bc; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-family: '微软雅黑', sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-size: 16px;">← 返回主页面</a>
+  </div>
+
+
+  <div id="password-lock-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: '微软雅黑', sans-serif;">
+    <h2 style="margin-bottom: 20px; color: #ff6699;">🔒 隐私网页，请输入专属密码</h2>
+    <input type="password" id="password-input" style="padding: 10px; font-size: 16px; border-radius: 4px; border: none; outline: none; margin-bottom: 10px; text-align: center;" placeholder="输入暗号">
+    <button onclick="checkPassword()" style="padding: 10px 20px; font-size: 16px; border-radius: 4px; border: none; background: #ff4081; color: white; cursor: pointer; font-weight: bold;">解锁</button>
+    <p id="password-error" style="color: #ff6b6b; margin-top: 10px; display: none;">密码不对哦，是不是乖乖忘了？</p>
+  </div>
+  <script>
+    function checkPassword() {
+      const pwd = document.getElementById('password-input').value;
+      if(pwd === 'ccz2026') {
+        document.getElementById('password-lock-overlay').style.display = 'none';
+      } else {
+        document.getElementById('password-error').style.display = 'block';
+      }
+    }
+  </script>
+
+</body>
+</html>

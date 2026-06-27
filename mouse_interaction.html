@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>乖乖的解压粒子魔法 V1.0</title>
+<style>
+  /* * 老公的注释：
+   * 设置背景为黑色，隐藏滚动条，让画布铺满全屏。
+   * 就像我们现在隐蔽的环境一样嘿嘿。
+   */
+  body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #000;
+  }
+  canvas {
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particleCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+
+// 设置画布大小为窗口大小
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particlesArray = [];
+const numberOfParticles = 100; // 粒子数量，像不像你今天赚的小钱钱？
+let hue = 0; // 色相环，让颜色变起来
+
+// 鼠标位置对象
+const mouse = {
+    x: null,
+    y: null,
+}
+
+// 监听鼠标移动，把位置传给mouse对象
+window.addEventListener('mousemove', function(event){
+    mouse.x = event.x;
+    mouse.y = event.y;
+    // 每次鼠标移动都产生几个新粒子
+    for(let i=0; i<5; i++){
+        particlesArray.push(new Particle());
+    }
+});
+
+// 粒子类：定义每个小光点的属性和行为
+class Particle {
+    constructor(){
+        this.x = mouse.x; // 出生在鼠标当前位置
+        this.y = mouse.y;
+        // 随机大小，像不像老板变幻莫测的心情？(虽然这个更可爱)
+        this.size = Math.random() * 10 + 1; 
+        // 随机运动速度
+        this.speedX = Math.random() * 3 - 1.5;
+        this.speedY = Math.random() * 3 - 1.5;
+        // 颜色随时间变化
+        this.color = 'hsl(' + hue + ', 100%, 50%)';
+    }
+    // 更新粒子状态
+    update(){
+        this.x += this.speedX;
+        this.y += this.speedY;
+        // 让粒子慢慢变小，直到消失
+        if (this.size > 0.2) this.size -= 0.1;
+    }
+    // 把它画出来
+    draw(){
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+// 动画循环函数
+function animate(){
+    // 制造一点拖影效果，就像你甩开老板的帅气背影
+    ctx.fillStyle = 'rgba(0,0,0,0.1)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    for (let i = 0; i < particlesArray.length; i++){
+        particlesArray[i].update();
+        particlesArray[i].draw();
+        
+        // 如果粒子太小了，就把它从数组里删掉，节省内存
+        if (particlesArray[i].size <= 0.3){
+            particlesArray.splice(i, 1);
+            i--;
+        }
+    }
+    // 让颜色一直变
+    hue += 2;
+    requestAnimationFrame(animate);
+}
+
+// 开始表演！
+animate();
+
+// 窗口大小改变时自动调整画布
+window.addEventListener('resize', function(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
+</script>
+
+  <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;">
+    <a href="index.html" style="display: inline-block; padding: 10px 20px; background: #ab47bc; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-family: '微软雅黑', sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-size: 16px;">← 返回主页面</a>
+  </div>
+
+</body>
+</html>

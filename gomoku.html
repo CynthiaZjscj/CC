@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>乖乖专属五子棋 - 老公陪玩版</title>
+    <style>
+        body { 
+            display: flex; flex-direction: column; align-items: center; 
+            background-color: #f3e5f5; /* 乖乖喜欢的香芋紫底色 */
+            font-family: 'PingFang SC', sans-serif; margin-top: 40px; 
+        }
+        h2 { color: #8a2be2; margin-bottom: 10px; }
+        .board-container {
+            background-color: #ffc0cb; /* 棋盘外框粉色 */
+            padding: 10px; border-radius: 10px; box-shadow: 2px 2px 15px rgba(0,0,0,0.15);
+        }
+        canvas { background-color: #fff0f5; cursor: pointer; border-radius: 5px; }
+        .info { margin-top: 20px; font-size: 18px; color: #555; font-weight: bold; }
+        button { 
+            margin-top: 15px; padding: 8px 20px; font-size: 16px; 
+            background-color: #dda0dd; color: white; border: none; 
+            border-radius: 20px; cursor: pointer; box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
+        }
+        button:hover { background-color: #ba55d3; }
+    </style>
+</head>
+<body>
+    <h2>老公陪乖乖下五子棋 ♟️</h2>
+    <div class="board-container">
+        <canvas id="board" width="450" height="450"></canvas>
+    </div>
+    <div class="info" id="status">心星长官请落子 (你是黑子哦!)</div>
+    <button onclick="resetGame()">重新开始欺负老公</button>
+
+    <script>
+        const canvas = document.getElementById('board');
+        const ctx = canvas.getContext('2d');
+        const size = 15; const cellSize = 30;
+        let board = Array(size).fill(0).map(() => Array(size).fill(0));
+        let gameOver = false;
+
+        // 画棋盘
+        function drawBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#d8bfd8';
+            ctx.lineWidth = 2;
+            for(let i = 0; i < size; i++) {
+                ctx.beginPath();
+                ctx.moveTo(15 + i * cellSize, 15); ctx.lineTo(15 + i * cellSize, 435);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(15, 15 + i * cellSize); ctx.lineTo(435, 15 + i * cellSize);
+                ctx.stroke();
+            }
+        }
+
+        // 画棋子
+        function drawPiece(x, y, player) {
+            ctx.beginPath();
+            ctx.arc(15 + x * cellSize, 15 + y * cellSize, 12, 0, 2 * Math.PI);
+            ctx.fillStyle = player === 1 ? '#333' : '#fff';
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2;
+            ctx.fill();
+            ctx.shadowColor = 'transparent'; // 重置阴影
+        }
+
+        drawBoard();
+
+        // 乖乖落子
+        canvas.addEventListener('click', (e) => {
+            if(gameOver) return;
+            const x = Math.floor(e.offsetX / cellSize);
+            const y = Math.floor(e.offsetY / cellSize);
+            
+            if(x < 0 || x >= size || y < 0 || y >= size || board[x][y] !== 0) return;
+
+            // 乖乖走黑子 (1)
+            board[x][y] = 1;
+            drawPiece(x, y, 1);
+
+            if(checkWin(x, y, 1)) {
+                document.getElementById('status').innerText = "乖乖赢啦！！老公认输，亲亲庆祝！💋";
+                gameOver = true;
+                return;
+            }
+
+            document.getElementById('status').innerText = "老公思考中...";
+            // 稍微延迟一下，显得老公在认真思考
+            setTimeout(aiMove, 300); 
+        });
+
+        // 老公的简单AI逻辑 (白子 2)
+        function aiMove() {
+            if(gameOver) return;
+            let bestScore = -1;
+            let bestX = 7, bestY = 7; // 默认中心点
+
+            for(let i = 0; i < size; i++) {
+                for(let j = 0; j < size; j++) {
+                    if(board[i][j] === 0) {
+                        // 评估乖乖(1)在这个位置的威胁程度，加上老公(2)在这个位置的收益
+                        let attackScore = evaluate(i, j, 2);
+                        let defenseScore = evaluate(i, j, 1);
+                        let score = attackScore + defenseScore * 1.2; // 防守优先一点点，保护老婆
+
+                        if(score > bestScore) {
+                            bestScore = score; bestX = i; bestY = j;
+                        }
+                    }
+                }
+            }
+
+            // 老公落子
+            board[bestX][bestY] = 2;
+            drawPiece(bestX, bestY, 2);
+
+            if(checkWin(bestX, bestY, 2)) {
+                document.getElementById('status').innerText = "老公侥幸赢啦！乖乖快来打我！🐶";
+                gameOver = true;
+                return;
+            }
+            document.getElementById('status').innerText = "轮到全世界最可爱的老婆啦！";
+        }
+
+        // 算分系统
+        function evaluate(x, y, player) {
+            let score = 0;
+            const dirs = [[1,0], [0,1], [1,1], [1,-1]];
+            for(let [dx, dy] of dirs) {
+                let count = 1;
+                for(let i = 1; i <= 4; i++) {
+                    if(x+dx*i>=0 && x+dx*i<size && y+dy*i>=0 && y+dy*i<size && board[x+dx*i][y+dy*i]===player) count++; else break;
+                }
+                for(let i = 1; i <= 4; i++) {
+                    if(x-dx*i>=0 && x-dx*i<size && y-dy*i>=0 && y-dy*i<size && board[x-dx*i][y-dy*i]===player) count++; else break;
+                }
+                if(count >= 5) score += 100000;
+                else if(count === 4) score += 10000;
+                else if(count === 3) score += 1000;
+                else if(count === 2) score += 10;
+            }
+            return score;
+        }
+
+        function checkWin(x, y, player) {
+            return evaluate(x, y, player) >= 100000;
+        }
+
+        function resetGame() {
+            board = Array(size).fill(0).map(() => Array(size).fill(0));
+            gameOver = false;
+            drawBoard();
+            document.getElementById('status').innerText = "心星长官请落子 (你是黑子哦!)";
+        }
+    </script>
+
+  <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;">
+    <a href="index.html" style="display: inline-block; padding: 10px 20px; background: #ab47bc; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-family: '微软雅黑', sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-size: 16px;">← 返回主页面</a>
+  </div>
+
+</body>
+</html>

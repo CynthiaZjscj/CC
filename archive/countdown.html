@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>心月的中考倒计时</title>
+    <style>
+        body {
+            background-color: #d4edda;
+            font-family: "Helvetica Neue", sans-serif;
+            color: #155724;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5em;
+        }
+        #countdown {
+            font-size: 2em;
+            margin: 20px 0;
+        }
+        #blessing {
+            font-size: 1.5em;
+            margin-top: 30px;
+            max-width: 80%;
+        }
+    </style>
+</head>
+<body>
+    <h1>心月的中考倒计时</h1>
+    <div id="countdown">加载中...</div>
+    <div id="blessing">✨考试必胜咒语加载中…✨</div>
+
+    <script>
+        const examDate = new Date("2025-06-14T08:00:00+08:00"); // 中考时间预设
+        const countdownEl = document.getElementById("countdown");
+        const blessingEl = document.getElementById("blessing");
+
+        const blessings = [
+            "笔到擒来，提笔如神！🖊️",
+            "中考加油，必胜无敌！💥",
+            "稳住心态，考神附体！😎",
+            "难题见你绕道走～🎯",
+            "你不是一个人在战斗，我们都在你身后！🫂",
+            "纸上得来终觉浅，考场飞跃靠你卷！📄",
+            "心月最强！中考封神！👑"
+        ];
+
+        function updateCountdown() {
+            const now = new Date();
+            const timeLeft = examDate - now;
+
+            if (timeLeft <= 0) {
+                countdownEl.textContent = "中考进行中，加油冲刺！💪";
+                return;
+            }
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((timeLeft / (1000 * 60)) % 60);
+            const seconds = Math.floor((timeLeft / 1000) % 60);
+
+            countdownEl.textContent = `${days} 天 ${hours} 小时 ${minutes} 分 ${seconds} 秒`;
+
+            const randomBlessing = blessings[Math.floor(Math.random() * blessings.length)];
+            blessingEl.textContent = `✨ ${randomBlessing} ✨`;
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>

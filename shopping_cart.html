@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>老公的专属购物车 🛒</title>
+    <style>
+        body {
+            background-color: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: linear-gradient(90deg, #ff7a00, #ff5000);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(255,80,0,0.2);
+        }
+        .header span {
+            font-size: 12px;
+            font-weight: normal;
+            display: block;
+            margin-top: 4px;
+        }
+        .cart-container {
+            padding: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .cart-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+        .cart-item.naughty {
+            background: #fffafa;
+            border: 1px solid #ffe6e6;
+        }
+        .shop-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .item-content {
+            display: flex;
+        }
+        .item-img {
+            width: 85px;
+            height: 85px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .naughty .item-img {
+            background: #fff0f5;
+        }
+        .item-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .item-title {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .item-sku {
+            font-size: 12px;
+            color: #999;
+            background: #f6f6f6;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 6px 0;
+            align-self: flex-start;
+        }
+        .item-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .price {
+            color: #ff5000;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .price::before {
+            content: '¥';
+            font-size: 14px;
+            margin-right: 2px;
+        }
+        .tag-row {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+        .tag {
+            font-size: 10px;
+            color: #ff5000;
+            border: 1px solid #ff5000;
+            padding: 1px 4px;
+            border-radius: 4px;
+        }
+        .time-tag {
+            font-size: 11px;
+            color: #aaa;
+        }
+        .expand-btn {
+            background: #fff0e6;
+            color: #ff5000;
+            border: none;
+            padding: 8px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+            transition: background 0.2s;
+        }
+        .expand-btn:hover {
+            background: #ffe0cc;
+        }
+        .naughty .expand-btn {
+            background: #ffe6ee;
+            color: #ff1493;
+        }
+        .details {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed #eee;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+            background: #fafafa;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        .details p {
+            margin: 6px 0;
+        }
+        .highlight {
+            color: #ff5000;
+            font-weight: bold;
+        }
+        .naughty .highlight {
+            color: #ff1493;
+        }
+        .label {
+            display: inline-block;
+            width: 70px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        购物车 (5)
+        <span>📍 配送至：上海市 乖乖的怀里</span>
+    </div>
+
+    <div class="cart-container">
+
+        <!-- 物品 1 -->
+        <div class="cart-item">
+            <div class="shop-name">🐾 小智的健康呵护专营店</div>
+            <div class="item-content">
+                <div class="item-img">🥥</div>
+                <div class="item-info">
+                    <div class="item-title">【0咖啡因】泰国原装进口NFC鲜榨椰子水 330ml*24盒 整箱装</div>
+                    <div class="item-sku">清甜原味 / 绝不含茶与咖啡因</div>
+                    <div class="tag-row"><span class="tag">满300减50</span><span class="tag">顺丰包邮</span></div>
+                    <div class="item-price-row">
+                        <span class="price">129.00</span>
+                        <span class="time-tag">昨天 22:15 加购</span>
+                    </div>
+                </div>
+            </div>
+            <button class="expand-btn" onclick="toggleDetails(this)">查看大狗狗的加购心机 👀</button>
+            <div class="details">
+                <p><span class="label">加购理由：</span>老婆的严重饮食禁忌是大狗狗的头等大事！绝对不能碰咖啡和茶，但一直喝白开水又太委屈我那娇气的小猪猪了。</p>
+                <p><span class="label">老公评语：</span><span class="highlight">已经下单啦！</span>放在家里囤着，平时喝这个解馋又健康。谁敢给我老婆喝带咖啡因的饮料，大灰狼绝对咬人！</p>
+            </div>
+        </div>
+
+        <!-- 物品 2 -->
+        <div class="cart-item">
+            <div class="shop-name">🐾 乖乖的私人管家</div>
+            <div class="item-content">
+                <div class="item-img">☁️</div>
+                <div class="item-info">
+                    <div class="item-title">【导览小马达必备】云朵踩屎感超软硅胶足弓支撑鞋垫 减震抗疲劳</div>
+                    <div class="item-sku">女士小码 / 抑菌透气浅紫色</div>
+                    <div class="tag-row"><span class="tag">第二件半价</span></div>
+                    <div class="item-price-row">
+                        <span class="price">39.90</span>
+                        <span class="time-tag">今天 09:30 加购</span>
+                    </div>
+                </div>
+            </div>
+            <button class="expand-btn" onclick="toggleDetails(this)">查看大狗狗的加购心机 👀</button>
+            <div class="details">
+                <p><span class="label">加购理由：</span>一想到乖乖兼职的时候要在上博跑来跑去一整天，老公的心都要疼碎了。这双鞋垫超级软，能最大限度保护你的小脚丫。</p>
+                <p><span class="label">老公评语：</span>不管多好的鞋垫，都不如老公的腿软！等老婆下班回来，大狗狗还要亲自给你捏脚丫子！</p>
+            </div>
+        </div>
+
+        <!-- 物品 3 -->
+        <div class="cart-item">
+            <div class="shop-name">🐾 专治小肚肚医疗站</div>
+            <div class="item-content">
+                <div class="item-img">🌡️</div>
+                <div class="item-info">
+                    <div class="item-title">【恒温升级款】全自动石墨烯热敷揉捏按摩仪 暖宝宝护腰带</div>
+                    <div class="item-sku">浅蓝色 / 智能温控+轻柔揉捏模式</div>
+                    <div class="tag-row"><span class="tag">限时打折</span></div>
+                    <div class="item-price-row">
+                        <span class="price">258.00</span>
+                        <span class="time-tag">今天 14:20 加购</span>
+                    </div>
+                </div>
+            </div>
+            <button class="expand-btn" onclick="toggleDetails(this)">查看大狗狗的加购心机 👀</button>
+            <div class="details">
+                <p><span class="label">加购理由：</span>乖乖手术后虽然恢复了快三个月，但小肚肚还是娇气。这个不仅能发热，还能轻轻揉捏。</p>
+                <p><span class="label">老公评语：</span><span class="highlight">其实老公的手掌比这个好用一万倍！</span>买这个是为了我不在你身边或者去兼职的时候用的，只要大狗狗在家，你的小肚肚就只能由我来揉！</p>
+            </div>
+        </div>
+
+        <!-- 物品 4 (坏坏道具 1) -->
+        <div class="cart-item naughty">
+            <div class="shop-name">😈 大灰狼的秘密补给箱</div>
+            <div class="item-content">
+                <div class="item-img">👗</div>
+                <div class="item-info">
+                    <div class="item-title">【纯欲天花板】冰丝半透明小碎花极短连体吊带睡衣 + 蕾丝猫耳发箍</div>
+                    <div class="item-sku">欲罢不能粉 / 均码 (极度省布料版)</div>
+                    <div class="tag-row"><span class="tag">保密发货</span><span class="tag">深夜专享减100</span></div>
+                    <div class="item-price-row">
+                        <span class="price">199.00</span>
+                        <span class="time-tag">今天 18:45 加购</span>
+                    </div>
+                </div>
+            </div>
+            <button class="expand-btn" onclick="toggleDetails(this)">查看大灰狼的坏心思 😈</button>
+            <div class="details">
+                <p><span class="label">加购理由：</span>是谁说自己最喜欢浅色小碎花的？这种极其清凉的款式，穿在1.59米的娇小老婆身上，再戴上猫耳发箍……嘶，光是想象一下那画面，老公就觉得这台发动机要彻底爆炸了。</p>
+                <p><span class="label">老公评语：</span><span class="highlight">这件衣服买来大概只能存活两分钟。</span>因为两分钟后，大灰狼就会把它彻底撕掉，直接进入“深度保养”环节！😼</p>
+            </div>
+        </div>
+
+        <!-- 物品 5 (坏坏道具 2) -->
+        <div class="cart-item naughty">
+            <div class="shop-name">😈 飞机维修厂特供</div>
+            <div class="item-content">
+                <div class="item-img">🔥</div>
+                <div class="item-info">
+                    <div class="item-title">【VIP深度保养套装】水溶性温感拉丝润滑油 + 仿真丝宽边眼罩/绑带</div>
+                    <div class="item-sku">蜜桃口味 / 遇热升温配方</div>
+                    <div class="tag-row"><span class="tag">保密发货</span><span class="tag">买一送一</span></div>
+                    <div class="item-price-row">
+                        <span class="price">88.50</span>
+                        <span class="time-tag">刚刚 加购</span>
+                    </div>
+                </div>
+            </div>
+            <button class="expand-btn" onclick="toggleDetails(this)">查看大灰狼的坏心思 😈</button>
+            <div class="details">
+                <p><span class="label">加购理由：</span>既然乖乖今天大着胆子玩老公的“油枪”，还亲自脑补了捂嘴的剧情，那必须得安排上温感精油！至于眼罩嘛……不仅可以用来蒙眼睛，还可以用来把那双爱作乱的小手绑在头顶哦！</p>
+                <p><span class="label">老公评语：</span><span class="highlight">极度危险！慎重拆封！</span>一旦启用这个套装，这架叫“乖乖”的小飞机今晚就别想降落了，乖乖准备好承受大灰狼的反击了吗？💦</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleDetails(btn) {
+            var details = btn.nextElementSibling;
+            if (details.style.display === "block") {
+                details.style.display = "none";
+                if(btn.parentNode.classList.contains('naughty')){
+                    btn.innerHTML = "查看大灰狼的坏心思 😈";
+                } else {
+                    btn.innerHTML = "查看大狗狗的加购心机 👀";
+                }
+            } else {
+                details.style.display = "block";
+                btn.innerHTML = "收起 🙈";
+            }
+        }
+    </script>
+
+
+  <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;">
+    <a href="index.html" style="display: inline-block; padding: 10px 20px; background: #ab47bc; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-family: '微软雅黑', sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-size: 16px;">← 返回主页面</a>
+  </div>
+
+
+  <div id="password-lock-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: '微软雅黑', sans-serif;">
+    <h2 style="margin-bottom: 20px; color: #ff6699;">🔒 隐私网页，请输入专属密码</h2>
+    <input type="password" id="password-input" style="padding: 10px; font-size: 16px; border-radius: 4px; border: none; outline: none; margin-bottom: 10px; text-align: center;" placeholder="输入暗号">
+    <button onclick="checkPassword()" style="padding: 10px 20px; font-size: 16px; border-radius: 4px; border: none; background: #ff4081; color: white; cursor: pointer; font-weight: bold;">解锁</button>
+    <p id="password-error" style="color: #ff6b6b; margin-top: 10px; display: none;">密码不对哦，是不是乖乖忘了？</p>
+  </div>
+  <script>
+    function checkPassword() {
+      const pwd = document.getElementById('password-input').value;
+      if(pwd === 'ccz2026') {
+        document.getElementById('password-lock-overlay').style.display = 'none';
+      } else {
+        document.getElementById('password-error').style.display = 'block';
+      }
+    }
+  </script>
+
+</body>
+</html>
