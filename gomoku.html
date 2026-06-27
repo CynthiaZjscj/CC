@@ -29,7 +29,7 @@
     <div class="board-container">
         <canvas id="board" width="450" height="450"></canvas>
     </div>
-    <div class="info" id="status">心星长官请落子 (你是黑子哦!)</div>
+    <div class="info" id="status">乖乖请落子 (你是黑子哦!)</div>
     <button onclick="resetGame()">重新开始欺负老公</button>
 
     <script>
@@ -152,7 +152,7 @@
             board = Array(size).fill(0).map(() => Array(size).fill(0));
             gameOver = false;
             drawBoard();
-            document.getElementById('status').innerText = "心星长官请落子 (你是黑子哦!)";
+            document.getElementById('status').innerText = "乖乖请落子 (你是黑子哦!)";
         }
     </script>
 
